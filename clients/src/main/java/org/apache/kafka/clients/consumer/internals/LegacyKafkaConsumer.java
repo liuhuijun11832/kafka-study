@@ -608,13 +608,14 @@ public class LegacyKafkaConsumer<K, V> implements ConsumerDelegate<K, V> {
 
                 if (includeMetadataInTimeout) {
                     // try to update assignment metadata BUT do not need to block on the timer for join group
+                    // 使用消费者协调器更新元数据和提交位移
                     updateAssignmentMetadataIfNeeded(timer, false);
                 } else {
                     while (!updateAssignmentMetadataIfNeeded(time.timer(Long.MAX_VALUE), true)) {
                         log.warn("Still waiting for metadata");
                     }
                 }
-
+                // 消费者拉取消息
                 final Fetch<K, V> fetch = pollForFetches(timer);
                 if (!fetch.isEmpty()) {
                     // before returning the fetched records, we can send off the next round of fetches
@@ -670,6 +671,7 @@ public class LegacyKafkaConsumer<K, V> implements ConsumerDelegate<K, V> {
         }
 
         // send any new fetches (won't resend pending fetches)
+        // 发送fetch请求，请求是异步的，通过responseHandler处理响应，放到了fetchBuffer里
         sendFetches();
 
         // We do not want to be stuck blocking in poll if we are missing some positions
@@ -684,6 +686,7 @@ public class LegacyKafkaConsumer<K, V> implements ConsumerDelegate<K, V> {
         log.trace("Polling for fetches with timeout {}", pollTimeout);
 
         Timer pollTimer = time.timer(pollTimeout);
+        // client也是fetcher的一个成员变量，这里的含义是等待fetcher的poll
         client.poll(pollTimer, () -> {
             // since a fetch might be completed by the background thread, we need this poll condition
             // to ensure that we do not block unnecessarily in poll()
