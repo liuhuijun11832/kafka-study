@@ -228,6 +228,7 @@ class KafkaServer(
         initZkClient(time)
         configRepository = new ZkConfigRepository(new AdminZkClient(zkClient))
 
+        /* 获取或者创建集群id */
         /* Get or create cluster_id */
         _clusterId = getOrGenerateClusterId(zkClient)
         info(s"Cluster ID = $clusterId")
@@ -251,6 +252,7 @@ class KafkaServer(
         }
         initialMetaPropsEnsemble.verify(Optional.of(_clusterId), verificationId, verificationFlags)
 
+        // 集群id
         /* generate brokerId */
         config.brokerId = getOrGenerateBrokerId(initialMetaPropsEnsemble)
         logContext = new LogContext(s"[KafkaServer id=${config.brokerId}] ")
@@ -260,6 +262,7 @@ class KafkaServer(
         // applied after ZkConfigManager starts.
         config.dynamicConfig.initialize(Some(zkClient), clientMetricsReceiverPluginOpt = None)
 
+        // kafka定时任务调度器
         /* start scheduler */
         kafkaScheduler = new KafkaScheduler(config.backgroundThreads)
         kafkaScheduler.startup()

@@ -108,7 +108,7 @@ object Kafka extends Logging {
             Exit.halt(1)
         }
       })
-
+      // kafka 启动入口
       try server.startup()
       catch {
         case e: Throwable =>
