@@ -632,7 +632,7 @@ public class LegacyKafkaConsumer<K, V> implements ConsumerDelegate<K, V> {
                         log.trace("Returning empty records from `poll()` "
                                 + "since the consumer's position has advanced for at least one topic partition");
                     }
-
+                    // 执行kafka内置监听器
                     return this.interceptors.onConsume(new ConsumerRecords<>(fetch.records()));
                 }
             } while (timer.notExpired());
