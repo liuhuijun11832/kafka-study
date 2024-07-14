@@ -854,7 +854,10 @@ class ReplicaManager(val config: KafkaConfig,
       def newResponseCallback(responses: Map[TopicPartition, PartitionResponse]): Unit = {
         responseCallback(preAppendPartitionResponses ++ responses)
       }
-
+      // 真正执行消息追加的函数
+      // 1.找到partition
+      // 2.确定分区leader,以及找到激活的logSegment,如果没有的话会roll一个新的出来
+      // 3.通过leader的fileRecord(包含了一个FileChannel)执行日志追加
       appendRecords(
         timeout = timeout,
         requiredAcks = requiredAcks,
