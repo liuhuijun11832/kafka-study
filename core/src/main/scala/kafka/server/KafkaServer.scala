@@ -586,9 +586,9 @@ class KafkaServer(
           tokenManager = tokenManager,
           apiVersionManager = apiVersionManager,
           clientMetricsManager = None)
-
+        // create data plane request processor
         dataPlaneRequestProcessor = createKafkaApis(socketServer.dataPlaneRequestChannel)
-
+        // create request handle thread pool
         dataPlaneRequestHandlerPool = new KafkaRequestHandlerPool(config.brokerId, socketServer.dataPlaneRequestChannel, dataPlaneRequestProcessor, time,
           config.numIoThreads, s"${DataPlaneAcceptor.MetricPrefix}RequestHandlerAvgIdlePercent", DataPlaneAcceptor.ThreadPrefix)
 
