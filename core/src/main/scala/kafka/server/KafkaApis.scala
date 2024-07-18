@@ -186,6 +186,7 @@ class KafkaApis(val requestChannel: RequestChannel,
       }
 
       request.header.apiKey match {
+        // 处理客户端消息发送
         case ApiKeys.PRODUCE => handleProduceRequest(request, requestLocal)
         case ApiKeys.FETCH => handleFetchRequest(request)
         case ApiKeys.LIST_OFFSETS => handleListOffsetRequest(request)
@@ -636,6 +637,7 @@ class KafkaApis(val requestChannel: RequestChannel,
     // The construction of ProduceResponse is able to accept auto-generated protocol data so
     // KafkaApis#handleProduceRequest should apply auto-generated protocol to avoid extra conversion.
     // https://issues.apache.org/jira/browse/KAFKA-10730
+    // 定义了一个局部回调函数，用于发送响应给消费者
     @nowarn("cat=deprecation")
     def sendResponseCallback(responseStatus: Map[TopicPartition, PartitionResponse]): Unit = {
       val mergedResponseStatus = responseStatus ++ unauthorizedTopicResponses ++ nonExistingTopicResponses ++ invalidRequestResponses
@@ -711,18 +713,21 @@ class KafkaApis(val requestChannel: RequestChannel,
       }
     }
 
+    // 定义了一个状态变更的回调
     def processingStatsCallback(processingStats: FetchResponseStats): Unit = {
       processingStats.forKeyValue { (tp, info) =>
         updateRecordConversionStats(request, tp, info)
       }
     }
 
+    // 这种情况应该就是没有服务端认证，直接返回
     if (authorizedRequestInfo.isEmpty)
       sendResponseCallback(Map.empty)
     else {
       val internalTopicsAllowed = request.header.clientId == AdminUtils.ADMIN_CLIENT_ID
       val supportedOperation = if (request.header.apiVersion > 10) genericError else defaultError
       // call the replica manager to append messages to the replicas
+      // 调用副本管理器去追加消息到副本，可以看到入参是一个个的回调函数，需要着重关注的是handleProduceAppend里追加日志的操作
       replicaManager.handleProduceAppend(
         timeout = produceRequest.timeout.toLong,
         requiredAcks = produceRequest.acks,
