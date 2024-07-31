@@ -626,7 +626,7 @@ class KafkaServer(
             }
           }
         }
-
+        // hoey:enable acceptor and processor
         val enableRequestProcessingFuture = socketServer.enableRequestProcessing(authorizerFutures)
         // Block here until all the authorizer futures are complete
         try {

@@ -801,7 +801,9 @@ private[kafka] abstract class Acceptor(val socketServer: SocketServer,
   }
 
   protected def configureAcceptedSocketChannel(socketChannel: SocketChannel): Unit = {
+    // set non blocking
     socketChannel.configureBlocking(false)
+    // set tcp no delay
     socketChannel.socket().setTcpNoDelay(true)
     socketChannel.socket().setKeepAlive(true)
     if (sendBufferSize != Selectable.USE_DEFAULT_BUFFER_SIZE)
