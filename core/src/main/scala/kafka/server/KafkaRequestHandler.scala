@@ -102,6 +102,7 @@ class KafkaRequestHandler(
   private val requestLocal = RequestLocal.withThreadConfinedCaching
   @volatile private var stopped = false
 
+  // hoey: Request Handler
   def run(): Unit = {
     threadRequestChannel.set(requestChannel)
     while (!stopped) {
