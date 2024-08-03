@@ -1243,6 +1243,7 @@ class UnifiedLog(@volatile var logStartOffset: Long,
       case FetchIsolation.HIGH_WATERMARK => fetchHighWatermarkMetadata
       case FetchIsolation.TXN_COMMITTED => fetchLastStableOffsetMetadata
     }
+    //hoey: read log from local log
     localLog.read(startOffset, maxLength, minOneMessage, maxOffsetMetadata, isolation == FetchIsolation.TXN_COMMITTED)
   }
 

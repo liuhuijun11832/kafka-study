@@ -1660,6 +1660,7 @@ class ReplicaManager(val config: KafkaConfig,
           log = partition.localLogWithEpochOrThrow(fetchInfo.currentLeaderEpoch, params.fetchOnlyLeader())
 
           // Try the read first, this tells us whether we need all of adjustedFetchSize for this partition
+          // hoey:read records from partition
           val readInfo: LogReadInfo = partition.fetchRecords(
             fetchParams = params,
             fetchPartitionData = fetchInfo,

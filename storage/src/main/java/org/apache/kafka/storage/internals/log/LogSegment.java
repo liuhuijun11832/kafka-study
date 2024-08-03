@@ -451,6 +451,8 @@ public class LogSegment implements Closeable {
         // calculate the length of the message set to read based on whether or not they gave us a maxOffset
         int fetchSize = Math.min((int) (maxPosition - startPosition), adjustedMaxSize);
 
+        // 这里通过log.slice()返回了一个新的FileRecords，FileRecords持有一个FileChannel
+        // 通过 transferTo()直接写入到了socketChannel
         return new FetchDataInfo(offsetMetadata, log.slice(startPosition, fetchSize),
             adjustedMaxSize < startOffsetAndSize.size, Optional.empty());
     }

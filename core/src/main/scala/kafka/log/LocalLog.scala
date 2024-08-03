@@ -380,6 +380,7 @@ class LocalLog(@volatile private var _dir: File,
         // continue to read from successive segments until we get some messages or we reach the end of the log
         var fetchDataInfo: FetchDataInfo = null
         while (fetchDataInfo == null && segmentOpt.isPresent) {
+          //hoey: every partiton have local log segment
           val segment = segmentOpt.get
           val baseOffset = segment.baseOffset
 
